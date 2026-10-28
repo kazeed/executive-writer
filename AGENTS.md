@@ -305,6 +305,82 @@ make new architectural decisions.
 A milestone involving material changes is not complete until
 documentation has been checked and updated, or the absence of
 necessary changes has been justified.
+
+## 17. Documentation-first development policy
+
+Before implementing a milestone or making architectural changes, Codex MUST:
+
+1. Read `requirements.md` for the relevant product requirements.
+2. Read `docs/README.md` as the entry point to technical documentation, when available.
+3. Read only the architecture, API, security, operational documentation and ADRs relevant to the assigned task.
+4. Use those documents to identify existing components, boundaries, contracts, conventions and architectural decisions.
+5. Inspect the affected source files and tests to verify the current implementation before editing.
+6. Prefer existing patterns and abstractions rather than introducing competing implementations.
+
+Do not recursively explore the entire repository on every task. Broaden discovery only when documentation is absent, insufficient, contradictory or demonstrably outdated, or when the task requires cross-cutting analysis.
+
+Documentation is the primary navigation and architectural reference. Source code, configuration and tests remain authoritative for implemented behavior. Never blindly trust documentation when changing security-sensitive behavior or public contracts.
+
+If documentation conflicts with implementation, identify the discrepancy and resolve it through the documentation-maintenance workflow. Do not silently rewrite application behavior to match stale documentation.
+
+After implementation and verification, invoke the project-documentation skill to update affected documentation. A milestone is not complete until its documentation impact has been reviewed.
+
+Keep the documentation index concise and navigable. Prefer links to detailed documentation over duplicating architectural explanations in AGENTS.md.
+
+## Documentation index and architectural navigation
+
+The file `docs/README.md` is the authoritative navigation
+index for Executive Writer's technical documentation.
+
+### Index maintenance
+
+The `project-documentation` skill MUST create and maintain
+this index.
+
+The index MUST:
+
+- Provide a concise overview of the implemented architecture.
+- Link to existing architecture, API, security, development,
+  operational and ADR documentation.
+- Describe each linked document's purpose briefly.
+- Identify principal application components and responsibilities.
+- Point to relevant documentation for major subsystems.
+- Distinguish implemented capabilities from planned functionality.
+- Contain only valid relative links to existing files.
+- Remain concise and optimized for navigation rather than
+  duplicating detailed documentation.
+
+### Documentation-first discovery
+
+Before implementation work, Codex MUST:
+
+1. Read `docs/README.md`.
+2. Identify documentation relevant to the assigned task.
+3. Read those documents before investigating implementation.
+4. Inspect relevant source code and tests to verify behavior.
+5. Expand exploration only when documentation is insufficient,
+   inconsistent, outdated, or the task requires broader analysis.
+
+Do not recursively explore the entire repository by default.
+
+### Continuous documentation synchronization
+
+After every milestone or material implementation change,
+the `project-documentation` skill MUST:
+
+1. Update affected technical documentation.
+2. Update `docs/README.md` if documents, components or
+   architectural relationships changed.
+3. Verify all index links.
+4. Remove or correct obsolete references.
+5. Report discrepancies and unresolved questions.
+
+Documentation is the primary architectural navigation aid,
+but source code, tests and configuration remain authoritative
+for implemented behavior.
+
+A milestone is not complete until documentation consistency
+has been verified.
 ---
 
 **Operating principle:** The application controls what may happen; the model helps decide what to write. Security and correctness are enforced through code and verified behavior, not prompt promises.
