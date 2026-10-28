@@ -21,7 +21,7 @@ jobs:
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      - run: uvx pyright==1.1.407
+      - run: uv run pyright
   tests:
     runs-on: ubuntu-latest
     steps:
@@ -53,7 +53,7 @@ jobs:
       - run: uv export --locked --no-emit-project --format requirements-txt -o /tmp/audit.txt
       - run: uvx pip-audit==2.9.0 -r /tmp/audit.txt --disable-pip --no-deps
       - run: uvx bandit==1.8.6 -r src
-      - run: docker run --rm -v "$PWD:/repo:ro" ghcr.io/gitleaks/gitleaks:v8.28.0 git --redact --source=/repo
+      - run: docker run --rm -v "$PWD:/repo:ro" ghcr.io/gitleaks/gitleaks:v8.28.0 git --redact /repo
   container:
     runs-on: ubuntu-latest
     steps:

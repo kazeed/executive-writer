@@ -18,6 +18,7 @@ build-backend = "uv_build"
 [dependency-groups]
 dev = [
     "httpx>=0.28.1",
+    "pyright>=1.1.414",
     "pytest>=9.2.0",
     "ruff>=0.17.3",
 ]
@@ -33,6 +34,8 @@ select = ["E", "F", "I", "B", "UP"]
 include = ["src"]
 typeCheckingMode = "strict"
 pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
 
 [tool.coverage.run]
 source = ["executive_writer"]
