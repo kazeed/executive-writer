@@ -279,6 +279,32 @@ When making a security-sensitive or version-dependent decision, consult the rele
 - OWASP LLM/GenAI project: https://genai.owasp.org/llm-top-10/
 - OWASP prompt injection prevention: https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html
 
+## 16. Project documentation maintenance
+
+Executive Writer maintains implementation documentation through
+the repository-local `project-documentation` skill at
+`.agents/skills/project-documentation/SKILL.md`.
+
+For every implementation milestone or material feature change:
+
+1. Complete the implementation and required verification.
+2. Invoke the `project-documentation` skill in update mode before
+   declaring the milestone complete.
+3. Ensure affected architecture, API, development, security, and
+   operational documentation matches the implemented code.
+4. Update Mermaid diagrams and README links when necessary.
+5. Identify documentation discrepancies and unresolved decisions.
+6. Include documentation changes in the milestone's review scope.
+
+For documentation-only changes, use the skill when appropriate.
+
+Never document planned capabilities as implemented.
+Documentation maintenance must not modify application code or
+make new architectural decisions.
+
+A milestone involving material changes is not complete until
+documentation has been checked and updated, or the absence of
+necessary changes has been justified.
 ---
 
 **Operating principle:** The application controls what may happen; the model helps decide what to write. Security and correctness are enforced through code and verified behavior, not prompt promises.

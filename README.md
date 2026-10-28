@@ -26,7 +26,7 @@ Assignment -> Research plan -> Evidence -> Analysis and outline
            -> Draft -> Critical review -> Final document
 ```
 
-These are **target capabilities**, not claims about the present implementation. See [`requirements.md`](requirements.md) for the evolving requirements specification when that file is present in the repository, and [`AGENTS.md`](AGENTS.md) for Codex engineering instructions.
+These are **target capabilities**, not claims about the present implementation. See [`requirements.md`](docs/requirements.md) for the evolving requirements specification when that file is present in the repository, and [`AGENTS.md`](AGENTS.md) for Codex engineering instructions.
 
 ## Current state: v0.1.0
 
@@ -135,6 +135,8 @@ When Docker support is implemented, the image must:
 **Security:** The `--publish 127.0.0.1:8000:8000` binding intentionally limits access to the local machine. Do not expose this initial API publicly until authentication, abuse controls, deployment protections, and the required security verification are implemented.
 
 ## Engineering and architecture
+
+See the [technical documentation index](docs/README.md) for current architecture, API contracts, development checks, operational limitations, and recorded decisions.
 
 The application is deliberately small at this stage. We will introduce model integrations, workflow orchestration, persistence, and operational infrastructure incrementally as requirements justify them.
 
