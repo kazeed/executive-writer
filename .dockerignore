@@ -1,0 +1,9 @@
+# Allowlist the only inputs needed for installation.
+**
+!pyproject.toml
+!uv.lock
+!README.md
+!src/
+!src/**
+src/**/__pycache__/
+src/**/*.pyc

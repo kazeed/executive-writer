@@ -16,7 +16,7 @@ Sources: [application registration](../../src/executive_writer/main.py),
 | GET | `/docs/oauth2-redirect` | Swagger UI OAuth redirect helper; does not establish application authentication |
 | GET | `/redoc` | Framework-provided ReDoc UI |
 
-Documentation routes are enabled by FastAPI defaults. Browser UI assets may require external
+Documentation routes are enabled by default; `EW_DOCS_ENABLED=false` disables all documentation/schema routes. Browser UI assets may require external
 access; their availability is not established by the application API tests.
 
 ## POST /documents
@@ -53,8 +53,11 @@ status lookup or retrieval endpoint.
 
 ## Errors and verification limits
 
-FastAPI returns its default validation error envelope with a `detail` list. Tests verify HTTP 422
+Validation errors retain HTTP 422 and the `detail` list, but entries now include only `loc` and
+`type` to avoid reflecting confidential submitted values or validator exception context. This is
+a deliberate error-contract hardening; clients relying on `msg`, `input` or `ctx` must adapt. Tests verify HTTP 422
 and the first error's `loc` for missing/empty/whitespace objective and missing/unsupported document
-type. They do not establish every malformed-input behavior or safe redaction of submitted values.
-No custom exception handler or application error schema is configured. Do not rely on validation
-responses being free of submitted content.
+type. Foundation tests add redaction assertions and a generic 500 handler test. Internal errors return
+`{"detail":"Internal server error"}`. These new HTTP tests have not completed in the sandbox;
+see the [verification record](../operations/milestone-2a.md). Responses include no-store, nosniff,
+DENY framing and no-referrer headers.

@@ -31,7 +31,7 @@ flowchart LR
     Invalid --> Client
 ```
 
-`GET /health` directly returns a static dictionary. It does not check dependencies or readiness.
+`GET /health` returns a typed static health response. It does not check dependencies or readiness.
 See the [API reference](../api/reference.md) for all routes and contracts.
 
 ## Boundaries and limitations
@@ -43,5 +43,16 @@ stored job behind it. HTTP 202 does not establish background processing or durab
 
 The research, evidence, outline, draft, review and finalization pipeline in the
 [requirements](../requirements.md) is desired behavior, not implemented components.
-Docker/OCI is a [recorded future direction](../adr/0001-oci-packaging.md).
+Docker/OCI packaging is authored under [ADR 0001](../adr/0001-oci-packaging.md);
+its verification remains blocked. `create_app` owns validated environment settings, middleware
+and safe exception handlers. No new business or infrastructure services were introduced.
+
+```mermaid
+flowchart LR
+    Environment --> Settings[Pydantic settings]
+    Settings --> Factory[create_app]
+    Factory --> FastAPI[FastAPI routes and handlers]
+    FastAPI --> Headers[ASGI security headers]
+    Headers --> Client
+```
 See [security status](../operations/status.md) for controls and deployment prerequisites.

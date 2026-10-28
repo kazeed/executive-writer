@@ -1,44 +1,72 @@
 # Operations and security status
 
-## Current operating model
+## Runtime configuration
 
-This checkout supports local development only. There is no Dockerfile, `.dockerignore`, deployment
-manifest or CI workflow. OCI packaging is an [approved direction](../adr/0001-oci-packaging.md),
-not an available build procedure. Hosting is undecided.
+[Settings](../../src/executive_writer/config.py) uses Pydantic Settings, with environment
+variables only (no implicit `.env` file). Invalid values fail application construction;
+validation errors hide input values. No credentials or unused service settings exist.
 
-[Application code](../../src/executive_writer/main.py) has no settings loader or application-specific
-environment variables. Title/version are literals. Server host/port are controlled through the
-Uvicorn invocation; see the [development guide](../development/guide.md). No provider credentials
-are currently needed. [.gitignore](../../.gitignore) excludes `.env`; this is not secret scanning
-or proof that credentials cannot be committed.
-
-## Controls and gaps
-
-Statuses below describe this repository, not a verified deployment.
-
-| Concern | Status | Evidence and limitation |
+| Variable | Default | Behavior |
 | --- | --- | --- |
-| Input boundary | Implemented | [Pydantic models](../../src/executive_writer/models/documents.py) enforce required fields, types, document types and nonblank objective; no application length/body limits |
-| Authentication/authorization | Planned; absent | No identity, ownership or permission checks in [routes](../../src/executive_writer/api/documents.py); no user/tenant isolation |
-| API abuse controls | Planned; absent | No rate limits, quotas, concurrency budgets or gateway configuration |
-| HTTP protections | Deployment-dependent; unverified | No configured TLS, trusted-host/proxy policy, CORS middleware, security headers or sensitive-response cache policy; public deployment requires explicit configuration and verification |
-| API documentation exposure | Implemented | FastAPI defaults expose schema and interactive documentation; no access controls |
-| External network/resources | No application integration | Handlers do not fetch URLs or access external services; SSRF protection is not implemented or established by this absence |
-| LLM/tool execution | Planned; absent | No provider or tools, prompts, workflow execution or model budgets; requirements do not create runtime controls |
-| Persistence/background work | Absent | No storage or workers; UUID/202 acceptance has no durable job semantics |
-| Dependencies | Implemented lockfile | [uv.lock](../../uv.lock) records resolved dependencies; no configured vulnerability scan or evidence of vulnerability-free dependencies |
-| Container security | Planned | No container image/build to inspect; non-root runtime and image scanning remain future work |
-| Logging/sensitive data | Unverified beyond source inspection | No application logging setup, correlation IDs or redaction; framework/server logs and validation error payloads need review before sensitive use |
+| `EW_ENVIRONMENT` | `development` | Validated `development` or `production` label; does not enable additional controls |
+| `EW_DOCS_ENABLED` | `true` | Boolean; false disables Swagger, ReDoc and OpenAPI routes |
 
-[Tests](../../tests/test_api.py) exercise a limited set of input failures and response contracts.
-They do not verify authorization, resource-exhaustion resistance, log redaction or deployed network
-controls. No OWASP compliance or production-readiness claim follows from these checks.
+The container sets production environment. Docs remain enabled to preserve the milestone's
+explicit endpoint requirement. Before external exposure, disable them or protect access.
+FastAPI debug is always false. Server host/port are Uvicorn arguments, not application settings.
 
-## Before public exposure
+## Container packaging
 
-[AGENTS.md](../../AGENTS.md) requires appropriate authentication/authorization, request and cost
-limits, abuse controls, safe errors/logging, HTTPS, precise proxy trust, security headers and
-deployment verification. Their control locations and verification remain to be established when
-exposure is scoped. Data retention, encryption and deletion need decisions before user content or
-credentials are persisted. Provider, job lifecycle, storage and hosting choices remain open in
-[requirements](../requirements.md). No public deployment has been verified for this baseline.
+[Dockerfile](../../Dockerfile) uses Python 3.13.18 slim Debian trixie in both build and runtime
+stages, uv 0.13.6 in the builder, locked noneditable production-only installation, and numeric
+UID/GID 10001. Only the virtual environment enters the runtime. Source inputs are allowlisted
+by [.dockerignore](../../.dockerignore); Git, local secrets, tests and caches are excluded.
+Runtime files are root-owned and cannot be modified by the application user.
+There are no added compilers or development tools in the final stage; the upstream Python
+image still contains its own runtime utilities. Uvicorn runs directly as PID 1, binds
+`0.0.0.0:8000`, ignores proxy headers, disables access/server headers and allows 10 seconds
+to shut down after SIGTERM. The Python healthcheck queries local `/health` with a timeout.
+
+```bash
+docker build -t executive-writer:local .
+docker run --rm --name executive-writer --read-only --cap-drop=ALL \
+  --security-opt=no-new-privileges --pids-limit=64 --memory=256m --cpus=1 \
+  -p 127.0.0.1:8000:8000 executive-writer:local
+docker stop --time 15 executive-writer
+bash scripts/container-smoke.sh
+docker save executive-writer:local -o /tmp/image.tar
+docker run --rm -v /tmp/image.tar:/image.tar:ro aquasec/trivy:0.69.3 image \
+  --input /image.tar --scanners vuln --severity HIGH,CRITICAL --exit-code 1
+```
+
+Read-only filesystem, capability dropping, no-new-privileges and resource ceilings are runtime
+options, not enforceable by a Dockerfile alone. The smoke script applies them and tests health,
+document response, documentation, UID, Docker health status and a zero exit after stopping.
+The local host port is dynamically assigned to avoid conflicts. Container verification is
+**blocked**, not proven; see [results](milestone-2a.md).
+
+Image references are version-pinned, **not digest-pinned**: registry access was unavailable.
+Before release, resolve and review multi-platform digests for Python, uv and scanner images,
+record them in Dockerfile/workflow, build and scan, then repeat smoke verification. Do not invent
+digests. Periodically update pins and rerun all gates to receive OS/Python patches. Hosting
+remains undecided and there is no deployment automation.
+
+## Threats, controls and residual gaps
+
+| Threat/boundary | Implemented control and tests | Residual/deployment requirement |
+| --- | --- | --- |
+| Untrusted JSON | Existing Pydantic document schema; original API tests preserved | No body/text size ceilings yet; gateway and application limits needed before exposure |
+| Error disclosure | Validation returns only `loc`/`type`; generic 500 with debug off; foundation tests | Review server exception logging before confidential use; no claim of complete log redaction |
+| Browser/cache handling | `nosniff`, DENY framing, no-referrer and no-store on responses; header tests | No blanket CSP because external Swagger/ReDoc assets must work; tailor CSP before browser/public exposure |
+| Cross-origin requests | No CORS middleware or grants; negative test | CORS does not authenticate or prevent direct API requests |
+| Proxy spoofing | Container disables forwarded-header trust | TLS/HSTS, trusted hosts and precise proxy policy belong to selected deployment; unverified |
+| Supply chain | Locked application dependencies; CI scanners fail on findings | Scans blocked locally; dev-tool lock and image digests remain unfinished |
+| Container privilege | Numeric non-root user, root-owned environment; smoke checks authored | Actual execution blocked; enforce capability/filesystem/resource options in deployment |
+| Identity and abuse | Absent; no sensitive stored resource or expensive integration yet | Authentication, object/function authorization, quotas, rate/concurrency/cost limits before future generation exposure |
+| External/LLM/tool use | No integrations or tool execution | SSRF protections, injection boundaries, budgets, cancellation and safe output rendering needed when added |
+| Persistence | Absent; UUID/202 do not establish a job | Ownership, encryption, retention, deletion and recovery required before storing content |
+
+No OWASP certification or public-production readiness is claimed. Before release, verify TLS,
+headers/CSP, proxy/host policy, access controls, scanning gates, incident/rotation procedures,
+monitoring, tested image digest, rollback and data lifecycle where applicable. Mark these
+infrastructure-owned or blocked until verified in the chosen environment.

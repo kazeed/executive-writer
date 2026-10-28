@@ -218,3 +218,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local configuration variants and audit exports
+.env.*
+!.env.example
+/audit-requirements.txt

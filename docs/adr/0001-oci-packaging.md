@@ -1,20 +1,22 @@
 # ADR 0001: Docker-compatible OCI packaging
 
-**Status:** Accepted direction; implementation pending.
+**Status:** Accepted direction; packaging authored in Milestone 2A, verification blocked.
 
 ## Context
 
 [AGENTS.md, section 12](../../AGENTS.md#12-production-engineering-delivery-and-architecture-governance)
 explicitly selects Docker-compatible OCI packaging while leaving hosting undecided.
-The [README](../../README.md#docker-packaging-and-usage-planned) also records this direction.
-This ADR transcribes that existing decision; it does not authorize packaging or deployment.
+The [README](../../README.md#docker-packaging-and-usage) also records this direction.
+This ADR originally transcribed that existing decision. The current Milestone 2A request
+authorizes repository packaging work, not public deployment.
 The original decision date and additional historical rationale are unknown.
 
 ## Decision
 
 Package the application as a Docker-compatible OCI container when the container milestone is
-explicitly scoped. Keep application logic independent of a hosting provider. No Dockerfile or
-container runtime configuration is currently implemented.
+explicitly scoped. Keep application logic independent of a hosting provider. A multi-stage [Dockerfile](../../Dockerfile) now installs locked runtime dependencies using uv,
+then runs Uvicorn as UID 10001. See [operations](../operations/status.md) and
+[verification blockers](../operations/milestone-2a.md).
 
 ## Alternatives considered
 
@@ -32,4 +34,4 @@ exposure require separate decisions and authorization.
 
 Preserve the Python 3.13 baseline and uv lockfile. Do not bake credentials or private documents into
 images. Do not assume persistent local disk. Deployment must address TLS, proxy trust, access and
-abuse controls. These are requirements for future implementation, not active container protections.
+abuse controls. Runtime/container controls and their verification status are recorded in the operations guide.

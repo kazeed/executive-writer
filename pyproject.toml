@@ -5,8 +5,10 @@ description = "An API for requesting executive documents."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi[standard]>=0.162.0",
+    "fastapi>=0.162.0",
     "pydantic>=2.14.1",
+    "pydantic-settings>=2.16.2",
+    "uvicorn>=0.54.0",
 ]
 
 [build-system]
@@ -26,3 +28,18 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.pyright]
+include = ["src"]
+typeCheckingMode = "strict"
+pythonVersion = "3.13"
+
+[tool.coverage.run]
+source = ["executive_writer"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+
+[tool.bandit]
+targets = ["src"]

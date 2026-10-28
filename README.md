@@ -87,52 +87,25 @@ uv run ruff format --check .
 uv run pytest -q
 ```
 
-Additional strict typing, security scanning, and CI checks are planned. Do not interpret the current checks as proof of production readiness.
+Strict typing and security CI gates are configured; local tool installation and verification are blocked. See the [development guide](docs/development/guide.md) and [Milestone 2A verification record](docs/operations/milestone-2a.md).
 
-## Docker packaging and usage (planned)
+## Docker packaging and usage
 
-**Docker/OCI is the selected packaging format, but no `Dockerfile` or `.dockerignore` is committed yet.** The commands below describe the intended interface **after** the container packaging milestone has been implemented and verified. They will not work against the current checkout.
-
-### Build
-
-From the repository root, after a Dockerfile has been added:
+A multi-stage Dockerfile installs locked production dependencies into a non-root Python 3.13
+runtime. Build and execution remain unverified in the implementation sandbox:
 
 ```bash
 docker build -t executive-writer:local .
+docker run --rm --name executive-writer --read-only --cap-drop=ALL \
+  --security-opt=no-new-privileges --pids-limit=64 --memory=256m --cpus=1 \
+  -p 127.0.0.1:8000:8000 executive-writer:local
 ```
 
-### Run locally
-
-```bash
-docker run --rm --name executive-writer \
-  --publish 127.0.0.1:8000:8000 \
-  executive-writer:local
-```
-
-Check the running container at http://127.0.0.1:8000/docs or:
-
-```bash
-curl http://127.0.0.1:8000/health
-```
-
-Stop it with `Ctrl+C` when running attached, or from another terminal:
-
-```bash
-docker stop executive-writer
-```
-
-### Container design requirements
-
-When Docker support is implemented, the image must:
-
-- Run the API on `0.0.0.0:8000` **inside** the container while the example above publishes only to the host's loopback interface.
-- Use a minimal, supported Python runtime, a non-root user, and only necessary runtime dependencies.
-- Use reproducible builds with `uv.lock`, a pinned base image strategy, and a `.dockerignore` excluding secrets, `.venv`, tests, Git metadata, and local caches as appropriate.
-- Avoid baking secrets into images or storing sensitive documents in container layers.
-- Include a working health-check strategy and support clean shutdown.
-- Remain portable across OCI-compatible hosting providers, without committing to a particular cloud service.
-
-**Security:** The `--publish 127.0.0.1:8000:8000` binding intentionally limits access to the local machine. Do not expose this initial API publicly until authentication, abuse controls, deployment protections, and the required security verification are implemented.
+Visit http://127.0.0.1:8000/docs or query `/health`. Stop with `docker stop --time 15 executive-writer`.
+Run `bash scripts/container-smoke.sh` for automated checks. Keep host exposure on loopback.
+See [runtime settings, scans and deployment prerequisites](docs/operations/status.md).
+Version pins still require immutable digest resolution before release. No hosting provider or
+public deployment is selected; this milestone does not establish public-production readiness.
 
 ## Engineering and architecture
 
