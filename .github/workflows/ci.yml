@@ -63,4 +63,4 @@ jobs:
       - run: docker build -t executive-writer:local .
       - run: bash scripts/container-smoke.sh
       - run: docker save executive-writer:local -o /tmp/image.tar
-      - run: docker run --rm -v /tmp/image.tar:/image.tar:ro aquasec/trivy:0.69.3 image --input /image.tar --scanners vuln --severity HIGH,CRITICAL --exit-code 1
+      - run: docker run --rm -v /tmp/image.tar:/image.tar:ro aquasec/trivy:0.76.1 image --input /image.tar --scanners vuln --severity HIGH,CRITICAL --exit-code 1

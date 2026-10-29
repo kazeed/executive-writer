@@ -79,6 +79,9 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Local security scan reports
+/security/reports/
+
 # IPython
 profile_default/
 ipython_config.py

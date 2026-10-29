@@ -1,5 +1,5 @@
-# Refresh version pins and resolve immutable registry digests before a release.
-FROM python:3.13.18-slim-trixie AS base
+FROM python:3.13.18-alpine3.24 AS base
+
 FROM base AS builder
 COPY --from=ghcr.io/astral-sh/uv:0.13.6 /uv /usr/local/bin/uv
 ENV UV_PYTHON_DOWNLOADS=never UV_LINK_MODE=copy
@@ -9,6 +9,7 @@ COPY src ./src
 RUN uv sync --locked --no-dev --no-editable --compile-bytecode
 
 FROM base AS runtime
+RUN python -m pip uninstall --yes pip
 ENV PATH="/app/.venv/bin:$PATH" PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 EW_ENVIRONMENT=production
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
