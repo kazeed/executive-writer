@@ -1,4 +1,4 @@
-# ADR 0002A: Foundation configuration and security gates
+# ADR 0002: Foundation configuration and security gates
 
 **Status:** Implemented configuration; verification and tool locking incomplete.
 **Date:** 2026-10-28 (Milestone 2A).
