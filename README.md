@@ -87,8 +87,9 @@ uv run ruff format --check .
 uv run pytest -q
 ```
 
-Internal M2B P1 workflow contracts and plan validation are implemented; workflow execution remains deferred.
-See the [P1 scope and verification record](docs/architecture/milestone-2b-p1.md).
+Internal M2B P2 in-memory orchestration is implemented with synthetic components.
+The public API remains unchanged. Durable execution is P3; review-driven routing is P4.
+See the [P2 scope, revised roadmap and verification record](docs/architecture/milestone-2b-p2.md).
 Strict typing passes locally; full HTTP tests, coverage and security verification have recorded limitations. See the [development guide](docs/development/guide.md) and [Milestone 2A verification record](docs/operations/milestone-2a.md).
 
 ## Docker packaging and usage
@@ -113,7 +114,7 @@ public deployment is selected; this milestone does not establish public-producti
 
 See the [technical documentation index](docs/README.md) for current architecture, API contracts, development checks, operational limitations, and recorded decisions.
 
-The application is deliberately small at this stage. We will introduce model integrations, workflow orchestration, persistence, and operational infrastructure incrementally as requirements justify them.
+The application is deliberately small at this stage. We will introduce real model integrations, durable execution, review-driven routing, and operational infrastructure incrementally under the revised roadmap.
 
 Key design principles are explicit contracts, separation between application control and AI judgment, testability, least privilege, evidence provenance, and avoiding unnecessary frameworks or abstractions. See [`AGENTS.md`](AGENTS.md) for detailed engineering and security requirements.
 

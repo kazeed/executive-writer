@@ -80,3 +80,27 @@ cover malicious planner fields, excessive budgets and unauthorized research.
 No LLM, network, artifact persistence or workflow execution is introduced. Runtime
 budget consumption, cancellation, retries, artifact retention and review routing
 remain **planned**. Existing public API protection gaps above remain applicable.
+
+## M2B P2 internal orchestration boundary
+
+**Implemented:** approved-plan-only sequencing, bounded planning corrections and
+explicit transient retries, per-call resource reservations and reported usage checks,
+a shared deadline, propagated cancellation with a terminal snapshot, immutable
+append-only artifact validation, lifecycle/attempt records and mechanical completion
+gates. Components receive typed inputs without mutable coordinator or repository
+access. Simulations label evidence and usage synthetic. No executor logs include
+source contents or raw exception text. See [P2 guarantees and verification](../architecture/milestone-2b-p2.md).
+
+**Residual limitations:** all artifacts are execution-local memory; loss on process
+exit is expected. Async timeouts/cancellation require cooperative components; no
+process isolation, real provider accounting, durable recovery or factual/citation
+verification is claimed. Budget overruns reported by a component stop subsequent
+work; external integrations must enforce declared reservations before actual spend.
+Resource limits are per execution, not shared tenant quotas or distributed abuse
+protection. Artifact retention and aggregate memory limits need further design before
+confidential or concurrent production workloads.
+
+**Planned:** P3 durable execution and retention/ownership/recovery decisions; P4
+review-driven routing. Public API auth/authorization, gateway limits, safe output
+rendering and deployment verification remain prerequisites, not active P2 controls.
+Full TestClient and >=90% coverage verification remain blocked as recorded above.

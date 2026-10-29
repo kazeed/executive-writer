@@ -2,12 +2,14 @@
 
 Executive Writer v0.1.0 is a local FastAPI scaffold, not a functioning AI writer.
 Milestone 2A adds engineering/container configuration but remains blocked on verification.
-M2B P1 adds internal workflow contracts and plan authorization; it does not execute workflows.
+M2B P2 adds internal in-memory orchestration with synthetic components; the HTTP API remains a stub.
+P3 durable execution and P4 review-driven routing remain deferred.
 This baseline describes the current code and configuration; passing tests verify only their assertions.
 
 - [Architecture and request lifecycle](architecture/overview.md)
+- [M2B P2 orchestration, revised roadmap and verification](architecture/milestone-2b-p2.md)
 - [M2B P1 contracts, validation and verification](architecture/milestone-2b-p1.md)
-- [Approved M2B specification (later execution remains planned)](architecture/milestone-2b-technical-specification.md)
+- [Approved M2B specification (read with P2 roadmap clarification)](architecture/milestone-2b-technical-specification.md)
 - [ADR 0003: Adaptive bounded orchestration](adr/adr-0003-adaptive-bounded-orchestration.md)
 - [ADR 0004: Execution governance and outcomes](adr/adr-0004-execution-governance-and-outcomes.md)
 - [ADR 0005: Internal workflow and in-memory artifacts](adr/adr-0005-in-memory-artifacts-and-internal-api.md)

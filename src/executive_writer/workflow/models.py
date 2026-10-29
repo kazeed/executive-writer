@@ -165,8 +165,11 @@ class ArtifactRecord(Contract):
 
 
 class Usage(Contract):
+    contains_synthetic_usage: bool = False
+    reporting_complete: bool = True
     model_calls: Count = 0
     tokens: Count = 0
+    operational_retries: Count = 0
     planning_corrections: Count = 0
     revision_cycles: Count = 0
     research_rounds: Count = 0
@@ -218,6 +221,7 @@ class ExecutionResult(Contract):
     attempts: tuple[StageAttempt, ...] = ()
     usage: Usage = Usage()
     error: ExecutionError | None = None
+    lifecycle_history: tuple[Lifecycle, ...] = ()
 
     @model_validator(mode="after")
     def terminal_invariants(self) -> Self:
