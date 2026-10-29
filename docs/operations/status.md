@@ -70,3 +70,13 @@ No OWASP certification or public-production readiness is claimed. Before release
 headers/CSP, proxy/host policy, access controls, scanning gates, incident/rotation procedures,
 monitoring, tested image digest, rollback and data lifecycle where applicable. Mark these
 infrastructure-owned or blocked until verified in the chosen environment.
+
+## M2B P1 internal planning boundary
+
+**Implemented:** strict bounded immutable contracts; deterministic stage/dependency
+validation; research permission intersection with trusted policy; ceiling checks;
+safe typed planning diagnostics. [P1 tests and verification](../architecture/milestone-2b-p1.md)
+cover malicious planner fields, excessive budgets and unauthorized research.
+No LLM, network, artifact persistence or workflow execution is introduced. Runtime
+budget consumption, cancellation, retries, artifact retention and review routing
+remain **planned**. Existing public API protection gaps above remain applicable.

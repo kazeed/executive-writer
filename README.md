@@ -87,7 +87,9 @@ uv run ruff format --check .
 uv run pytest -q
 ```
 
-Strict typing and security CI gates are configured; local tool installation and verification are blocked. See the [development guide](docs/development/guide.md) and [Milestone 2A verification record](docs/operations/milestone-2a.md).
+Internal M2B P1 workflow contracts and plan validation are implemented; workflow execution remains deferred.
+See the [P1 scope and verification record](docs/architecture/milestone-2b-p1.md).
+Strict typing passes locally; full HTTP tests, coverage and security verification have recorded limitations. See the [development guide](docs/development/guide.md) and [Milestone 2A verification record](docs/operations/milestone-2a.md).
 
 ## Docker packaging and usage
 
