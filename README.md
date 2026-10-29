@@ -1,5 +1,10 @@
 # Executive Writer
 
+[![CI](https://github.com/kazeed/executive-writer/actions/workflows/ci.yml/badge.svg)](https://github.com/kazeed/executive-writer/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.13-blue)
+![Coverage](https://img.shields.io/badge/coverage-99.17%25-brightgreen)
+![License](https://img.shields.io/badge/license-not%20yet%20specified-lightgrey)
+
 **Executive Writer** is an open-source, Python-based AI research and writing application intended to turn an assignment into an evidence-grounded executive document.
 
 Rather than treating document creation as a single prompt-to-text operation, the project aims to use an inspectable workflow: understand the assignment, plan the research, gather and assess evidence, structure an argument, draft, critically review, and deliver a finished document.
