@@ -10,6 +10,7 @@ from executive_writer.workflow.errors import PlanErrorCode, ValidationLayer
 from executive_writer.workflow.models import DocumentBrief, ResearchPlan, ResearchQuestion
 from executive_writer.workflow.planning import Planner, PlanSnapshot, ProposedPlan, StageDependency
 from executive_writer.workflow.policies import ExecutionLimits, ExecutionPolicy, Permissions
+from executive_writer.workflow.reporting import ComponentResult, ModelUsage, ResourceBudget
 from executive_writer.workflow.stages import Stage
 from executive_writer.workflow.validation import ApprovedPlan, PlanValidator
 
@@ -245,12 +246,19 @@ def test_invalid_json_and_unchecked_copy(brief, policy):
 
 def test_planner_protocol(brief, policy):
     class TestPlanner:
+        @property
+        def budget(self):
+            return ResourceBudget(model_calls=1, tokens=1)
+
         async def propose(self, brief, policy, feedback=()):
-            return ProposedPlan(rationale=brief.objective)
+            return ComponentResult(
+                value=ProposedPlan(rationale=brief.objective),
+                usage=ModelUsage(model_calls=1, tokens=1, synthetic=True),
+            )
 
     planner: Planner = TestPlanner()
-    proposal = asyncio.run(planner.propose(brief, policy))
-    assert PlanValidator().validate(proposal, brief, policy).approved_plan is not None
+    response = asyncio.run(planner.propose(brief, policy))
+    assert PlanValidator().validate(response.value, brief, policy).approved_plan is not None
 
 
 def test_research_needs_can_be_recorded_without_permission(brief, policy):

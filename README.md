@@ -1,6 +1,11 @@
 # Executive Writer
 
-**Executive Writer** is an open-source, Python-based AI research and writing application intended to turn an assignment into an evidence-grounded executive document.
+[![CI](https://github.com/kazeed/executive-writer/actions/workflows/ci.yml/badge.svg)](https://github.com/kazeed/executive-writer/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.13-blue)
+![Coverage](https://img.shields.io/badge/coverage-99.17%25-brightgreen)
+![License](https://img.shields.io/badge/license-not%20yet%20specified-lightgrey)
+
+**Executive Writer** is a Python-based AI research and writing project intended to turn an assignment into an evidence-grounded executive document.
 
 Rather than treating document creation as a single prompt-to-text operation, the project aims to use an inspectable workflow: understand the assignment, plan the research, gather and assess evidence, structure an argument, draft, critically review, and deliver a finished document.
 
@@ -26,19 +31,41 @@ Assignment -> Research plan -> Evidence -> Analysis and outline
            -> Draft -> Critical review -> Final document
 ```
 
-These are **target capabilities**, not claims about the present implementation. See [`requirements.md`](docs/requirements.md) for the evolving requirements specification when that file is present in the repository, and [`AGENTS.md`](AGENTS.md) for Codex engineering instructions.
+These are **target capabilities**, not claims about the present implementation. See the [product requirements](docs/requirements.md) for the evolving requirements specification, and [`AGENTS.md`](AGENTS.md) for Codex engineering instructions.
 
 ## Current state: v0.1.0
 
-The repository currently provides a minimal, tested **FastAPI** foundation using Python 3.13, **uv**, **Pydantic**, **pytest**, and **Ruff**.
+The repository provides a **FastAPI** API foundation and an internal, in-memory workflow
+engine (Milestone 2B P1/P2). The stack uses Python 3.13, **uv**, **Pydantic v2**,
+**pytest**, **Ruff**, and strict **Pyright** checks. The package version remains `0.1.0`.
+
+### Internal workflow engine
+
+The [workflow package](src/executive_writer/workflow/) implements:
+
+- Typed, immutable assignment, plan, evidence, draft, review, and execution contracts.
+- Plan validation against trusted permissions, stage ordering, dependencies, and resource ceilings.
+- Sequential async orchestration with optional research, analysis, and outline stages, followed by drafting and review.
+- Bounded planning corrections and transient retries, reported model-call/token accounting, deadlines, and cooperative cancellation.
+- Execution-local, append-only artifacts with provenance, versions, attempt records, and lifecycle history.
+- Mechanical completion checks for draft content, word limits, required headings, and citation evidence IDs.
+
+[Injected stage interfaces](src/executive_writer/workflow/components.py) and
+[synthetic components](src/executive_writer/workflow/fakes.py) support offline execution and tests.
+There are no real model providers or external retrieval integrations. Evidence-ID checks do
+not verify facts or citation support. Artifacts are lost when the process exits, and the
+engine is not connected to the HTTP API.
+
+### HTTP API
 
 | Endpoint | Current behavior |
 | --- | --- |
 | `GET /health` | Returns HTTP 200 with `{"status":"ok"}`. |
 | `POST /documents` | Validates a document request and returns HTTP 202 with a generated ID and `accepted` status. |
-| `GET /docs` | Interactive Swagger/OpenAPI documentation. |
+| `GET /docs`, `GET /redoc` | Interactive API documentation, enabled by default. |
+| `GET /openapi.json` | Generated OpenAPI schema, enabled by default. |
 
-**Important:** `POST /documents` is currently a placeholder. It does not create, queue, persist, or return a document and makes no LLM calls. The returned ID is not yet a retrievable job identifier. There is no authentication or public-production hardening yet: run this version locally, not as an internet-facing service.
+**Important:** `POST /documents` is currently a placeholder. It does not create, queue, persist, or return a document and makes no LLM calls. The returned ID is not yet a retrievable job identifier. Run this version locally: authentication, authorization, API request-size limits, and rate limiting are not implemented. Safe error responses and basic security/cache headers are implemented; they do not establish public-production readiness.
 
 ## Local development
 
@@ -79,17 +106,39 @@ curl --fail-with-body -X POST http://127.0.0.1:8000/documents \
 
 The document request currently accepts `objective` (required and nonblank), `document_type` (`memo`, `report`, or `briefing`), and optional `audience`, `context`, and `instructions`.
 
+### Configuration
+
+Settings are read from environment variables; `.env` files are not loaded automatically.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `EW_ENVIRONMENT` | `development` | Accepts `development` or `production`; the label alone enables no additional protections. |
+| `EW_DOCS_ENABLED` | `true` | Set to `false` to disable Swagger, ReDoc, and OpenAPI routes. |
+
 ### Quality checks
 
 ```bash
+uv lock --check
 uv run ruff check .
 uv run ruff format --check .
+uv run pyright
 uv run pytest -q
+uv run pytest -q --cov --cov-report=term-missing
 ```
 
-Internal M2B P1 workflow contracts and plan validation are implemented; workflow execution remains deferred.
-See the [P1 scope and verification record](docs/architecture/milestone-2b-p1.md).
-Strict typing passes locally; full HTTP tests, coverage and security verification have recorded limitations. See the [development guide](docs/development/guide.md) and [Milestone 2A verification record](docs/operations/milestone-2a.md).
+Local verification on 2026-10-29 passed: Ruff lint and formatting, strict Pyright,
+lockfile verification, and **151 tests with 99.17% statement coverage** (90% required).
+The suite emits one dependency deprecation warning about FastAPI/Starlette TestClient's
+use of httpx. Tests require no live provider credentials or internet access.
+
+[GitHub Actions](.github/workflows/ci.yml) configures quality, coverage, dependency audit,
+static analysis, secret scanning, and container build/smoke/vulnerability jobs. Those
+security/container jobs and GitHub-hosted CI were not rerun for this README update.
+Older documentation records TestClient/coverage blockers; the local results above
+supersede those historical blockers for this checkout.
+
+See the [development guide](docs/development/guide.md) for additional checks and the
+[P2 implementation record](docs/architecture/milestone-2b-p2.md) for workflow details.
 
 ## Docker packaging and usage
 
@@ -113,7 +162,9 @@ public deployment is selected; this milestone does not establish public-producti
 
 See the [technical documentation index](docs/README.md) for current architecture, API contracts, development checks, operational limitations, and recorded decisions.
 
-The application is deliberately small at this stage. We will introduce model integrations, workflow orchestration, persistence, and operational infrastructure incrementally as requirements justify them.
+The revised roadmap defers durable execution to P3, review-driven revision and research
+re-entry to P4, and final milestone verification to P5. Real model integrations and external
+research remain future work. See the [roadmap and open decisions](docs/architecture/milestone-2b-p2.md#approved-roadmap-clarification).
 
 Key design principles are explicit contracts, separation between application control and AI judgment, testability, least privilege, evidence provenance, and avoiding unnecessary frameworks or abstractions. See [`AGENTS.md`](AGENTS.md) for detailed engineering and security requirements.
 

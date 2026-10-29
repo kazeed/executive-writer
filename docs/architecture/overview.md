@@ -3,8 +3,9 @@
 ## Implemented components
 
 The package under `src/executive_writer/` contains HTTP routing, boundary models and
-[internal workflow contracts and plan validation](milestone-2b-p1.md).
-There is no workflow execution, provider adapter, storage, queue or worker.
+[internal in-memory workflow orchestration](milestone-2b-p2.md), using the
+[P1 domain contracts and validator](milestone-2b-p1.md).
+There is no real provider adapter, durable storage, queue or worker.
 Package `__init__.py` files contain descriptive docstrings without initialization logic.
 
 | Component | Responsibility | Evidence |
@@ -45,10 +46,11 @@ stored job behind it. HTTP 202 does not establish background processing or durab
 
 The research, evidence, outline, draft, review and finalization pipeline in the
 [requirements](../requirements.md) is desired behavior. P1 implements its domain
-contracts and plan validation only; execution remains deferred.
+contracts and plan validation; P2 adds internal execution with synthetic components.
+Durable execution is deferred to P3 and review-driven routing to P4.
 Docker/OCI packaging is authored under [ADR 0001](../adr/0001-oci-packaging.md);
 its verification remains blocked. `create_app` owns validated environment settings, middleware
-and safe exception handlers. No new business or infrastructure services were introduced.
+and safe exception handlers. The internal executor is not wired into these HTTP handlers.
 
 ```mermaid
 flowchart LR

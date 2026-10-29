@@ -102,3 +102,12 @@ operational error/retry taxonomy remain later implementation decisions identifie
 by the specification. Public deployment still requires the
 [security prerequisites](../operations/status.md); P1 is not a production readiness
 claim. No architecture deviation or new provider/infrastructure decision was made.
+
+## Subsequent phase clarification
+
+The P1 verification and implementation statements above describe the P1 baseline.
+[P2 now implements in-memory orchestration](milestone-2b-p2.md), including a usage-reporting
+extension to the internal Planner interface. Under the revised approved roadmap,
+durable execution moves to P3, review-driven routing to P4 and final verification
+to P5. The earlier P1 remaining-work paragraph is historical; P2 does not implement
+review-driven revision or research re-entry.

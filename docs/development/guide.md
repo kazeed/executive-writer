@@ -75,3 +75,19 @@ Default tests need neither credentials nor internet. See the
 [verification record](../operations/milestone-2a.md) for actual results and blockers.
 Apply [project-documentation](../../.agents/skills/project-documentation/SKILL.md) after material
 changes; keep [requirements](../requirements.md) separate from implemented behavior.
+
+## M2B P2 verification
+
+Run `uv run pytest -q tests/workflow` for offline planning, artifact and orchestration
+tests, and the configured coverage command:
+
+```bash
+uv run pyright
+uv run --with pytest-cov==7.0.0 pytest -q --cov --cov-report=term-missing
+```
+
+The [P2 record](../architecture/milestone-2b-p2.md) supersedes historical P1 execution
+status: workflow tests and strict typing pass, full TestClient execution stalls, and
+coverage package download fails on PyPI DNS in the current environment. No threshold
+or test is disabled to work around these blockers. P3 durability and P4 review routing
+are outside the current implementation.

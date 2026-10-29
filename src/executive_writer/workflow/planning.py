@@ -8,6 +8,7 @@ from executive_writer.workflow.contracts import Contract, Text, Texts
 from executive_writer.workflow.errors import PlanIssue
 from executive_writer.workflow.models import DocumentBrief, ResearchPlan
 from executive_writer.workflow.policies import ExecutionLimits, ExecutionPolicy
+from executive_writer.workflow.reporting import ComponentResult, ResourceBudget
 from executive_writer.workflow.stages import Stage
 
 
@@ -35,9 +36,12 @@ class PlanSnapshot(Contract):
 
 
 class Planner(Protocol):
+    @property
+    def budget(self) -> ResourceBudget: ...
+
     async def propose(
         self,
         brief: DocumentBrief,
         policy: ExecutionPolicy,
         feedback: tuple[PlanIssue, ...] = (),
-    ) -> ProposedPlan: ...
+    ) -> ComponentResult[ProposedPlan]: ...
