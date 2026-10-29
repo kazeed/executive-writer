@@ -9,7 +9,7 @@ This baseline describes the current code and configuration; passing tests verify
 - [Development and verification](development/guide.md)
 - [Operations and security status](operations/status.md)
 - [Milestone 2A verification and blockers](operations/milestone-2a.md)
-- [ADR 0002: Foundation configuration and security gates](adr/0002-engineering-foundation.md)
+- [ADR 0002: Foundation configuration and security gates](adr/0002a-engineering-foundation.md)
 - [ADR 0001: OCI packaging direction](adr/0001-oci-packaging.md)
 - [Product requirements](requirements.md) — desired behavior and future milestones
 - [Engineering conventions](../AGENTS.md) — standards, not implemented protections
