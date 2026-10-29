@@ -15,25 +15,17 @@ uv run pytest -q
 [pyproject.toml](../../pyproject.toml) configures Ruff (`py313`), strict Pyright for `src`,
 Bandit targets and a 90% coverage threshold. Runtime dependencies are FastAPI, Pydantic,
 pydantic-settings and Uvicorn. FastAPI's standard extras were removed to exclude unused CLI,
-cloud and optional server dependencies. Development dependencies remain httpx, pytest and Ruff.
+cloud and optional server dependencies. Development dependencies include httpx, pytest, Ruff and Pyright.
 [uv.lock](../../uv.lock) was regenerated with uv, without manual changes.
 
-## Tool installation gap
+## Verification status
 
-The implementation environment cannot resolve PyPI, and its cache does not contain Pyright,
-pytest-cov, pip-audit or Bandit. They are **not installed or locked development dependencies**.
-Once network access is available, finish integration using:
-
-```bash
-uv add --dev pyright==1.1.407 pytest-cov==7.0.0 pip-audit==2.9.0 bandit==1.8.6
-uv run pyright
-uv run pytest -q --cov --cov-report=term-missing --cov-report=xml
-```
-
-Then replace the isolated `uvx`/`--with` CI invocations with `uv run` commands. Until then,
-`uv run pyright` cannot work in a fresh synced checkout. This is an explicit unfinished
-Milestone 2A requirement, not a passing gate. The versions in CI are explicit bootstrap pins;
-review available releases and advisories when locking them.
+Pyright is now a locked development dependency and `uv run pyright` passes in the
+P1 environment. pytest-cov, pip-audit and Bandit remain outside locked development
+dependencies; isolated CI tool invocations remain configured. Do not treat a
+configured gate as a verified result. See the [P1 verification record](../architecture/milestone-2b-p1.md)
+for current checks, the blocked full HTTP test run and unavailable coverage
+measurement. Historical M2A blockers remain recorded separately.
 
 ## Local security checks
 
