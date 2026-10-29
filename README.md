@@ -3,7 +3,7 @@
 [![CI](https://github.com/kazeed/executive-writer/actions/workflows/ci.yml/badge.svg)](https://github.com/kazeed/executive-writer/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.13-blue)
 ![Coverage](https://img.shields.io/badge/coverage-99.17%25-brightgreen)
-![License](https://img.shields.io/badge/license-not%20yet%20specified-lightgrey)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 **Executive Writer** is a Python-based AI research and writing project intended to turn an assignment into an evidence-grounded executive document.
 
@@ -167,6 +167,10 @@ re-entry to P4, and final milestone verification to P5. Real model integrations 
 research remain future work. See the [roadmap and open decisions](docs/architecture/milestone-2b-p2.md#approved-roadmap-clarification).
 
 Key design principles are explicit contracts, separation between application control and AI judgment, testability, least privilege, evidence provenance, and avoiding unnecessary frameworks or abstractions. See [`AGENTS.md`](AGENTS.md) for detailed engineering and security requirements.
+
+## License
+
+Executive Writer is licensed under the [Apache License, Version 2.0](LICENSE). You may use, modify, and distribute it, including commercially, under the license terms. Copyright and attribution notices must be preserved as required by the license.
 
 ## Project status and contribution
 
